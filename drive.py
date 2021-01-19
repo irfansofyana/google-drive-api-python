@@ -1,9 +1,4 @@
 from auth import get_credentials, create_service
-# from html_sanitizer import Sanitizer
-# from htmllaundry import sanitize
-from bs4 import BeautifulSoup
-
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 
 class GoogleDriveClient():
     def __init__(self, credential_files, token_file, scopes):
@@ -28,10 +23,33 @@ class GoogleDriveClient():
 
         return results
 
-    def list_files(self, drive_id):
-        return self._paginate()
+    def list_files(self, corpora_type, drive_id):
+        data = {
+            'corpora': corpora_type,
+            'includeItemsFromAllDrives': True,
+            'supportsAllDrives': True,
+        }
 
-    # WIP
-    def paginate(self, resource, data):
+        if (corpora_type == 'drive'):
+            data['driveId'] = drive_id
+
+        return self._paginate(data)
+
+    def _paginate(self, data):
         drive = create_service('drive', 'v3', self.google_authorizer)
-        return drive
+
+        results = []
+        should_paginate = True
+        page_token = None
+
+        while (should_paginate):
+            data['pageToken'] = page_token
+
+            result = drive.files().list(**data).execute()
+
+            page_token = result['nextPageToken'] if ('nextPageToken' in result) else 0 
+            
+            should_paginate = isinstance(page_token, str)
+            results.append(result['files'])
+        
+        return results
