@@ -1,10 +1,19 @@
-from auth import get_credentials, create_service
+from auth import get_credential, create_service
 
 class GoogleDriveClient():
-    def __init__(self, credential_files, token_file, scopes):
-        self.google_authorizer = get_credentials(credential_files, token_file, scopes)
+    """
+    This is a class for Google Drive Client.
+
+    Attributes:
+        credential_files (str): Path for the credential file from Google Cloud Project
+        token_file (str): Path for saving our token for automatic authentication
+    """
+    def __init__(self, credential_file, token_file, scopes):
+        self.google_authorizer = get_credential(credential_file, token_file, scopes)
     
     def export_file(self, file_id, mime_type):
+        """Returns the exported file that has specific mime_type"""
+
         drive = create_service('drive', 'v3', self.google_authorizer)
 
         result = drive.files().export(
@@ -15,6 +24,8 @@ class GoogleDriveClient():
         return result
     
     def get_file(self, file_id):
+        """Returns the metadata of the specific file"""
+
         drive = create_service('drive', 'v3', self.google_authorizer)
 
         result = drive.files().get(
@@ -24,6 +35,8 @@ class GoogleDriveClient():
         return result
     
     def copy_file(self, file_id, options):
+        """Returns the copy of the specific file"""
+
         drive = create_service('drive', 'v3', self.google_authorizer)
 
         result = drive.files().copy(
@@ -40,6 +53,8 @@ class GoogleDriveClient():
         return result
 
     def list_files(self, corpora_type, drive_id):
+        """Returns the list of the files from specific drive_id"""
+
         data = {
             'corpora': corpora_type,
             'includeItemsFromAllDrives': True,
@@ -52,6 +67,8 @@ class GoogleDriveClient():
         return self._paginate(data)
 
     def _paginate(self, data):
+        """Helper function of the list_files function"""
+
         drive = create_service('drive', 'v3', self.google_authorizer)
 
         results = []
