@@ -22,7 +22,7 @@ def get_credentials(credential_file, token_file, scopes):
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                credential_files, scopes)
+                credential_file, scopes)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open(token_file, 'wb') as token:

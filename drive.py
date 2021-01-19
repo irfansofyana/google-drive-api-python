@@ -7,21 +7,37 @@ class GoogleDriveClient():
     def export_file(self, file_id, mime_type):
         drive = create_service('drive', 'v3', self.google_authorizer)
 
-        results = drive.files().export(
-            fileId=file_id,
-            mimeType=mime_type
+        result = drive.files().export(
+            fileId = file_id,
+            mimeType = mime_type
         ).execute()
 
-        return results
+        return result
     
     def get_file(self, file_id):
         drive = create_service('drive', 'v3', self.google_authorizer)
 
-        results = drive.files().get(
-            fileId=file_id
+        result = drive.files().get(
+            fileId = file_id
         ).execute()
 
-        return results
+        return result
+    
+    def copy_file(self, file_id, options):
+        drive = create_service('drive', 'v3', self.google_authorizer)
+
+        result = drive.files().copy(
+            fileId = file_id,
+            enforceSingleParent = True,
+            body = {
+                "name": options['name'],
+                "parents": [
+                    options['parentFolderId'],
+                ],
+            }
+        ).execute()
+
+        return result
 
     def list_files(self, corpora_type, drive_id):
         data = {
