@@ -83,6 +83,6 @@ class GoogleDriveClient():
             page_token = result['nextPageToken'] if ('nextPageToken' in result) else 0 
             
             should_paginate = isinstance(page_token, str)
-            results.append(result['files'])
+            results += (result['files'])
         
         return results
